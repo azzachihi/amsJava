@@ -42,10 +42,6 @@ public class Candidat {
 		this.email = email;
 		this.tel = tel;
 	}
-	public Candidat()
-	{
-		
-	}
 	
 	
 	
