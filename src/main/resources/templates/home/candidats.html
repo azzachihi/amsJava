@@ -23,6 +23,8 @@
 			<th>Nom</th>
 			<th>Email</th>
 			<th>Téléphone</th>
+			<th>show</th>
+			<th>delete</th>
 			
 		</tr>
 
@@ -31,6 +33,8 @@
 			<td th:text="${c.nom}"></td>
 			<td th:text="${c.email}"></td>
 			<td th:text="${c.tel}"></td>
+			<td><a th:href="@{/show/{idC}(idC=${c.id})}" class="btn btn-primary">Show</a></td>
+			<td><a th:href="@{/delete/{idC}(idC=${c.id})}" class="btn btn-danger">Delete</a></td>
 		</tr>
 		<caption align="bottom">Liste des candidats</caption>
 	</table>
