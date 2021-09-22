@@ -79,7 +79,6 @@ public class HomeController {
 		lc.remove(id);
 		return "redirect:../candidats";
 	}
-	
 }
 
 
