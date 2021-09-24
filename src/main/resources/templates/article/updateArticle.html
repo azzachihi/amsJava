@@ -44,8 +44,7 @@ MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
 								<label for="provider" class="col-formlabel">Select
 									Provider</label> <select name="providerId" class="form-control">
 									<option th:each="pr: ${providers}" th:value="${pr.id}"
-										th:text="${pr.name}"
-										th:selected="(${pr.id} == ${idProvider})" />
+										th:text="${pr.name}" th:selected="(${pr.id} == ${idProvider})" />
 								</select>
 							</div>
 							<div class="form-group col-md-8">

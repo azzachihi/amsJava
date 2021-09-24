@@ -12,23 +12,19 @@ public class Provider {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
-	
-	
+
 	@NotBlank(message = "Name is mandatory")
 	@Column(name = "name")
 	private String name;
-	
-	
-	
+
 	@NotBlank(message = "Address is mandatory")
 	@Column(name = "address")
 	private String address;
-	
-	
+
 	@NotBlank(message = "Email is mandatory")
 	@Column(name = "email")
 	private String email;
-	
+
 	@Column(name = "logo")
 	private String logo;
 
@@ -73,8 +69,7 @@ public class Provider {
 	public String getAddress() {
 		return address;
 	}
-	
-	
+
 	public void setLogo(String logo) {
 		this.logo = logo;
 	}

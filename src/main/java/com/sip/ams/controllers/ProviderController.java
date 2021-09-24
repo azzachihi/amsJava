@@ -27,7 +27,9 @@ import com.sip.ams.repositories.ProviderRepository;
 public class ProviderController {
 
 	private final ProviderRepository providerRepository;
-	public static String providersDirectory = System.getProperty("user.dir") + "/src/main/resources/static/images/providers";
+	public static String providersDirectory = System.getProperty("user.dir")
+			+ "/src/main/resources/static/images/providers";
+
 	@Autowired
 	public ProviderController(ProviderRepository providerRepository) {
 		this.providerRepository = providerRepository;
@@ -58,25 +60,24 @@ public class ProviderController {
 
 	@PostMapping("add")
 	public String addProvider(@Valid Provider provider, BindingResult result,
-			@RequestParam("files") MultipartFile[] files
-			) {
+			@RequestParam("files") MultipartFile[] files) {
 		if (result.hasErrors()) {
 			return "provider/addProvider";
 		}
-		
+
 		/// upload image
-				StringBuilder fileName = new StringBuilder();
-				MultipartFile file = files[0];
-				Path fileNameAndPath = Paths.get(providersDirectory, file.getOriginalFilename());
-				fileName.append(file.getOriginalFilename());
-				try {
-					Files.write(fileNameAndPath, file.getBytes());
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				provider.setLogo(fileName.toString());
-				/// fin upload image
-				
+		StringBuilder fileName = new StringBuilder();
+		MultipartFile file = files[0];
+		Path fileNameAndPath = Paths.get(providersDirectory, file.getOriginalFilename());
+		fileName.append(file.getOriginalFilename());
+		try {
+			Files.write(fileNameAndPath, file.getBytes());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		provider.setLogo(fileName.toString());
+		/// fin upload image
+
 		providerRepository.save(provider);
 		return "redirect:list";
 	}
@@ -106,7 +107,7 @@ public class ProviderController {
 	@PostMapping("update")
 	public String updateProvider(@Valid Provider provider, BindingResult result, Model model,
 			@RequestParam("files") MultipartFile[] files) {
-		
+
 		/// upload image
 		StringBuilder fileName = new StringBuilder();
 		MultipartFile file = files[0];
@@ -119,7 +120,7 @@ public class ProviderController {
 		}
 		provider.setLogo(fileName.toString());
 		/// fin upload image
-		
+
 		providerRepository.save(provider);
 		return "redirect:list";
 	}
