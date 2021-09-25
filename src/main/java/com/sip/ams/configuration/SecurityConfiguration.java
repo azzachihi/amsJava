@@ -11,63 +11,56 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import javax.sql.DataSource;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
-    @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
-    @Autowired
-    private DataSource dataSource;
-    @Value("${spring.queries.users-query}")
-    private String usersQuery;
-    @Value("${spring.queries.roles-query}")
-    private String rolesQuery;
+	@Autowired
+	private BCryptPasswordEncoder bCryptPasswordEncoder;
+	@Autowired
+	private DataSource dataSource;
+	@Value("${spring.queries.users-query}")
+	private String usersQuery;
+	@Value("${spring.queries.roles-query}")
+	private String rolesQuery;
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth)  //authentification
-            throws Exception {
-        auth.
-                jdbcAuthentication()
-                .usersByUsernameQuery(usersQuery) // on cherche les users avec compte actifs(cad  = 1)
-                .authoritiesByUsernameQuery(rolesQuery) // on charge les roles du user qu'on trouve
-                .dataSource(dataSource)
-                .passwordEncoder(bCryptPasswordEncoder);
-    }
+	@Override
+    // Authentication
+	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+		auth.jdbcAuthentication().usersByUsernameQuery(usersQuery).authoritiesByUsernameQuery(rolesQuery)
+				.dataSource(dataSource).passwordEncoder(bCryptPasswordEncoder);
+	}
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {  // autorisation
+	@Override
+	// Autorisation
+	protected void configure(HttpSecurity http) throws Exception {
+		http.authorizeRequests().antMatchers("/").permitAll() // accès pour toususers
+				.antMatchers("/login").permitAll() // accès pourtous users
+				.antMatchers("/registration").permitAll() // accèspour tous users
+				.antMatchers("/role/**").permitAll()
+				.antMatchers("/accounts/**").permitAll()
+				
+				//.antMatchers("/provider/**").hasAuthority("ADMIN").antMatchers("/article/**").hasAuthority("USER")
+				.antMatchers("/provider/**").hasAnyAuthority("ADMIN", "SUPERADMIN")
+				.antMatchers("/article/**").hasAnyAuthority("USER","SUPERADMIN")
+				
+				.anyRequest().authenticated().and().csrf().disable().formLogin() // l'accès defait via un formulaire
+				
+				.loginPage("/login").failureUrl("/login?error=true") // fixer lapage login
+				.defaultSuccessUrl("/home") // page d'accueil après login avec succès
+				.usernameParameter("email") // paramètred'authentifications login et password
+				.passwordParameter("password").and().logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout")) // route
+																															// de
+																															// deconnexion
+																															// ici
+																															// /logut
+				.logoutSuccessUrl("/login").and().exceptionHandling() // une foisdeconnecté redirection vers login
+				.accessDeniedPage("/403");
+	}
 
-        http.
-                authorizeRequests()
-                .antMatchers("/").permitAll() // accès pour tous users
-                .antMatchers("/login").permitAll() // accès pour tous users
-                .antMatchers("/registration").permitAll() // accès pour tous users
-                .antMatchers("/role/**").permitAll()
-                .antMatchers("/accounts/**").permitAll()
-                .antMatchers("/provider/**").hasAuthority("ADMIN")
-                .antMatchers("/article/**").hasAuthority("USER").anyRequest()
-                .authenticated().and().csrf().disable().formLogin() // l'accès de fait via un formulaire
-                
-                .loginPage("/login").failureUrl("/login?error=true") // fixer la page login
-                
-                .defaultSuccessUrl("/home") // page d'accueil après login avec succès
-                .usernameParameter("email") // paramètres d'authentifications login et password
-                .passwordParameter("password")
-                .and().logout()
-                .logoutRequestMatcher(new AntPathRequestMatcher("/logout")) // route de deconnexion ici /logut
-                .logoutSuccessUrl("/login").and().exceptionHandling() // une fois deconnecté redirection vers login
-                
-                .accessDeniedPage("/403"); 
-    }
-
-   // laisser l'accès aux ressources
-    @Override
-    public void configure(WebSecurity web) throws Exception {  // acces aux ressources
-        web
-                .ignoring()
-                .antMatchers("/resources/**", "/static/**", "/css/**", "/js/**", "/images/**");
-    }
-
+	// laisser l'accès aux ressources
+	@Override
+	public void configure(WebSecurity web) throws Exception {
+		web.ignoring().antMatchers("/resources/**", "/static/**", "/css/**", "/js/**", "/images/**");
+	}
 }
-
-

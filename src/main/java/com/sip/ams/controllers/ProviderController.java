@@ -1,5 +1,13 @@
 package com.sip.ams.controllers;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -9,20 +17,17 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.sip.ams.entities.Provider;
 import com.sip.ams.repositories.ProviderRepository;
-import java.util.List;
-import javax.validation.Valid;
 
-import java.util.Date;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;  
 @Controller
 @RequestMapping("/provider/")
 public class ProviderController {
-	private final ProviderRepository providerRepository;
 
+	private final ProviderRepository providerRepository;
+	public static String providersDirectory = System.getProperty("user.dir") + "/src/main/resources/static/images/providers";
 	@Autowired
 	public ProviderController(ProviderRepository providerRepository) {
 		this.providerRepository = providerRepository;
@@ -31,46 +36,63 @@ public class ProviderController {
 	@GetMapping("list")
 	// @ResponseBody
 	public String listProviders(Model model) {
-		List<Provider>providers = (List<Provider>) providerRepository.findAll();
-		/*if (ls.isEmpty())
-			ls = null;*/
-		
-		//model.addAttribute("providers",ls);
-		model.addAttribute("providers",providers);
+
+		List<Provider> lp = (List<Provider>) providerRepository.findAll();
+		if (lp.size() == 0)
+			lp = null;
+		model.addAttribute("providers", lp);
 		return "provider/listProviders";
+
+		// List<Provider> lp =
+		// (List<Provider>)providerRepository.findAll();
+		// System.out.println(lp);
+		// return "Nombre de fournisseur = " + lp.size();
 	}
 
 	@GetMapping("add")
 	public String showAddProviderForm(Model model) {
-		Provider provider = new Provider();// object dont la valeur des attributs par defaut
+		Provider provider = new Provider(); // object dont la valeur des attributs par defaut
 		model.addAttribute("provider", provider);
 		return "provider/addProvider";
 	}
 
 	@PostMapping("add")
-	public String addProvider(@RequestParam("dateProvider")String dateProvider, @Valid Provider provider, BindingResult result, Model model) throws ParseException {
-		//if (result.hasErrors()) {
-
-			//return "provider/addProvider";
-		//}
-
-	    Date date1=(Date) new SimpleDateFormat("yyyy-MM-dd").parse(dateProvider);  
-	    provider.setDateProvider(date1);
+	public String addProvider(@Valid Provider provider, BindingResult result,
+			@RequestParam("files") MultipartFile[] files
+			) {
+		if (result.hasErrors()) {
+			return "provider/addProvider";
+		}
+		
+		/// upload image
+				StringBuilder fileName = new StringBuilder();
+				MultipartFile file = files[0];
+				Path fileNameAndPath = Paths.get(providersDirectory, file.getOriginalFilename());
+				fileName.append(file.getOriginalFilename());
+				try {
+					Files.write(fileNameAndPath, file.getBytes());
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				provider.setLogo(fileName.toString());
+				/// fin upload image
+				
 		providerRepository.save(provider);
 		return "redirect:list";
 	}
 
 	@GetMapping("delete/{id}")
-	public String deleteProvider(@PathVariable("id") long num) {
+	public String deleteProvider(@PathVariable("id") long idp, Model model) {
 		// long id2 = 100L;
-		Provider provider = providerRepository.findById(num).orElseThrow(() -> new IllegalArgumentException("Invalid provider Id:" + num));
-		//System.out.println("suite du programme...");
+		Provider provider = providerRepository.findById(idp)
+				.orElseThrow(() -> new IllegalArgumentException("Invalid provider Id:" + idp));
+		System.out.println("suite du programme...");
 		providerRepository.delete(provider);
 		/*
 		 * model.addAttribute("providers", providerRepository.findAll()); return
 		 * "provider/listProviders";
 		 */
-	return "redirect:../list";
+		return "redirect:../list";
 	}
 
 	@GetMapping("edit/{id}")
@@ -82,11 +104,22 @@ public class ProviderController {
 	}
 
 	@PostMapping("update")
-	public String updateProvider(@Valid Provider provider, BindingResult result, Model model) {
-		if (result.hasErrors()) {
-			model.addAttribute("provider", provider);
-			return "provider/updateProvider";
+	public String updateProvider(@Valid Provider provider, BindingResult result, Model model,
+			@RequestParam("files") MultipartFile[] files) {
+		
+		/// upload image
+		StringBuilder fileName = new StringBuilder();
+		MultipartFile file = files[0];
+		Path fileNameAndPath = Paths.get(providersDirectory, file.getOriginalFilename());
+		fileName.append(file.getOriginalFilename());
+		try {
+			Files.write(fileNameAndPath, file.getBytes());
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
+		provider.setLogo(fileName.toString());
+		/// fin upload image
+		
 		providerRepository.save(provider);
 		return "redirect:list";
 	}
