@@ -17,46 +17,52 @@ import com.sip.ams.entities.Candidat;
 public class HomeController {
 	static ArrayList<Candidat> lc;
 	static {
-		lc = new ArrayList<Candidat>();
-		Candidat c1 = new Candidat(1, "nawel", "nawel@gmail.com", "21212121");
-		Candidat c2 = new Candidat(2, "sameh", "sameh@gmail.com", "44444121");
-		Candidat c3 = new Candidat(3, "mohamed", "mohamed@gmail.com", "8888888888");
+		lc = new ArrayList<>();
+		Candidat c1 = new Candidat(0, "Naouel", "naouel@gmail.com", "11111111");
+		Candidat c2 = new Candidat(1, "Sameh", "samed@gmail.com", "22222222");
+		Candidat c3 = new Candidat(2, "Amine", "amine@gmail.com", "33333333");
 		lc.add(c1);
 		lc.add(c2);
 		lc.add(c3);
-
 	}
 
 	@RequestMapping("/index")
+	// @ResponseBody
 	public String home() {
+		// return "<h2>Bienvenue au BootCamp</h2>";
 		return "home/index";
 	}
 
 	@RequestMapping("/candidats")
-	public String listeCandidat(Model m) {
-		// bch nesna3 tableau dobjet candidat
+	public String listCandidats(Model m) {
+		/*
+		 * Candidat tab[]=new Candidat[3]; tab[0]=c1; tab[1]=c2; tab[2]=c3;
+		 */
+		String libelleFormation = "Spring Boot & Angular";
+		String formateur = "Mohamed Amine Mezghich";
 
-		String libeleFormation = "springBoot angular";
-		m.addAttribute("lf", libeleFormation);
+		m.addAttribute("lf", libelleFormation);
+		m.addAttribute("coach", formateur);
 		m.addAttribute("tab", lc);
 		return "home/candidats";
-
 	}
 
 	@GetMapping("/add")
-	public String addCandidat() {
+	// @ResponseBody
+	public String addCandidate() {
 		return "home/add";
 	}
 
 	@PostMapping("/add")
-	public String saveCandidat(@RequestParam("id") int id, @RequestParam("nom") String nom,
-			@RequestParam("email") String email, @RequestParam("tel") String tel)
-
-	{
+	// @ResponseBody
+	public String saveCandidate(@RequestParam("id") int id, @RequestParam("nom") String nom,
+			@RequestParam("email") String email, @RequestParam("tel") String tel) {
 		Candidat temp = new Candidat(id, nom, email, tel);
 		lc.add(temp);
-		// System.out.println("id+nom+email+tel");
-		// return +id+nom+email+tel;
+
+		// System.out.println(id+" "+nom+" "+email+" "+tel);
+
+		// return "infos : "+id+" "+nom+" "+email+" "+tel;
 		return "redirect:candidats";
 	}
 
@@ -72,4 +78,5 @@ public class HomeController {
 		lc.remove(id);
 		return "redirect:../candidats";
 	}
+
 }

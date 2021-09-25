@@ -25,37 +25,37 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	private String rolesQuery;
 
 	@Override
+	// Authentication
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth.jdbcAuthentication().usersByUsernameQuery(usersQuery).authoritiesByUsernameQuery(rolesQuery)
 				.dataSource(dataSource).passwordEncoder(bCryptPasswordEncoder);
 	}
 
 	@Override
- protected void configure(HttpSecurity http) throws Exception {
- http.
- authorizeRequests()
- .antMatchers("/").permitAll() // accès pour toususers
- .antMatchers("/login").permitAll() // accès pour tous users
- .antMatchers("/registration").permitAll() // accèspour tous users
- 
- .antMatchers("/provider/**").hasAuthority("ADMIN")
- 
-.antMatchers("/article/**").hasAuthority("USER").anyRequest()
- 
-.authenticated().and().csrf().disable().formLogin() // l'accès defait via un formulaire
- .loginPage("/login").failureUrl("/login?error=true") // fixer lapage login
- 
- .defaultSuccessUrl("/home") // page d'accueil après login avec succès
- .usernameParameter("email") // paramètresd'authentifications login et password
- .passwordParameter("password")
- .and().logout()
- .logoutRequestMatcher(new
-AntPathRequestMatcher("/logout")) // route de deconnexion ici/logut
- 
-.logoutSuccessUrl("/login").and().exceptionHandling() // une foisdeconnecté redirection vers login
- 
- .accessDeniedPage("/403"); 
- }
+	// Autorisation
+	protected void configure(HttpSecurity http) throws Exception {
+		http.authorizeRequests().antMatchers("/").permitAll() // accès pour toususers
+				.antMatchers("/login").permitAll() // accès pourtous users
+				.antMatchers("/registration").permitAll() // accèspour tous users
+				.antMatchers("/role/**").permitAll().antMatchers("/accounts/**").permitAll()
+
+				// .antMatchers("/provider/**").hasAuthority("ADMIN").antMatchers("/article/**").hasAuthority("USER")
+				.antMatchers("/provider/**").hasAnyAuthority("ADMIN", "SUPERADMIN").antMatchers("/article/**")
+				.hasAnyAuthority("USER", "SUPERADMIN")
+
+				.anyRequest().authenticated().and().csrf().disable().formLogin() // l'accès defait via un formulaire
+
+				.loginPage("/login").failureUrl("/login?error=true") // fixer lapage login
+				.defaultSuccessUrl("/home") // page d'accueil après login avec succès
+				.usernameParameter("email") // paramètred'authentifications login et password
+				.passwordParameter("password").and().logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout")) // route
+																															// de
+																															// deconnexion
+																															// ici
+																															// /logut
+				.logoutSuccessUrl("/login").and().exceptionHandling() // une foisdeconnecté redirection vers login
+				.accessDeniedPage("/403");
+	}
 
 	// laisser l'accès aux ressources
 	@Override
