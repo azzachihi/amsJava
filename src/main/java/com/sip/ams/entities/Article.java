@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotBlank;
+
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -24,18 +25,19 @@ public class Article {
 
 	@Column(name = "price")
 	private float price;
+	
+    @Column(name = "picture")
+    private String picture;
 
-	@Column(name = "picture")
-	private String picture;
 
 	public Article() {
 	}
 
 	public Article(String label, float price, String picture) {
-		this.price = price;
-		this.label = label;
-		this.picture = picture;
-	}
+        this.price = price;
+        this.label = label;
+        this.picture = picture;
+        }
 
 	public void setId(long id) {
 		this.id = id;
@@ -62,6 +64,7 @@ public class Article {
 	}
 
 	/**** Many To One ****/
+
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "provider_id", nullable = false)
 	@OnDelete(action = OnDeleteAction.CASCADE)
@@ -74,13 +77,15 @@ public class Article {
 	public void setProvider(Provider provider) {
 		this.provider = provider;
 	}
-
+	
 	public void setPicture(String picture) {
 		this.picture = picture;
 	}
-
+	
+	
 	public String getPicture() {
 		return picture;
 	}
+
 
 }
