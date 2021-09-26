@@ -25,7 +25,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	private String rolesQuery;
 
 	@Override
-    // Authentication
+	// Authentication
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth.jdbcAuthentication().usersByUsernameQuery(usersQuery).authoritiesByUsernameQuery(rolesQuery)
 				.dataSource(dataSource).passwordEncoder(bCryptPasswordEncoder);
@@ -38,23 +38,16 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.antMatchers("/login").permitAll() // accès pourtous users
 				.antMatchers("/registration").permitAll() // accèspour tous users
 				.antMatchers("/role/**").permitAll()
-				
-				//.antMatchers("/provider/**").hasAuthority("ADMIN").antMatchers("/article/**").hasAuthority("USER")
-				.antMatchers("/accounts/**").hasAnyAuthority("USER", "ADMIN", "SUPERADMIN")
-				.antMatchers("/provider/**").hasAnyAuthority("ADMIN", "SUPERADMIN", "USER")
-				.antMatchers("/article/**").hasAnyAuthority("ADMIN","SUPERADMIN", "USER")
-				
-				
-				.anyRequest().authenticated().and().csrf().disable().formLogin() // l'accès defait via un formulaire
-				
+				// .antMatchers("/provider/**").hasAuthority("ADMIN").antMatchers("/article/**").hasAuthority("USER")
+				.antMatchers("/accounts/**").hasAnyAuthority("USER", "ADMIN", "SUPERADMIN").antMatchers("/provider/**")
+				.hasAnyAuthority("ADMIN", "SUPERADMIN", "USER").antMatchers("/article/**")
+				.hasAnyAuthority("ADMIN", "SUPERADMIN", "USER").anyRequest().authenticated().and().csrf().disable()
+				.formLogin() // l'accès defait via un formulaire
 				.loginPage("/login").failureUrl("/login?error=true") // fixer lapage login
 				.defaultSuccessUrl("/home") // page d'accueil après login avec succès
 				.usernameParameter("email") // paramètred'authentifications login et password
 				.passwordParameter("password").and().logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout")) // route
 																															// de
-																															// deconnexion
-																															// ici
-																															// /logut
 				.logoutSuccessUrl("/login").and().exceptionHandling() // une foisdeconnecté redirection vers login
 				.accessDeniedPage("/403");
 	}
