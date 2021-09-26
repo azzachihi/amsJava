@@ -36,10 +36,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests().antMatchers("/").permitAll() // accès pour toususers
 				.antMatchers("/login").permitAll() // accès pourtous users
+				.antMatchers("/accounts/**").permitAll()
 				.antMatchers("/registration").permitAll() // accèspour tous users
 				.antMatchers("/role/**").permitAll()
 				// .antMatchers("/provider/**").hasAuthority("ADMIN").antMatchers("/article/**").hasAuthority("USER")
-				.antMatchers("/accounts/**").hasAnyAuthority("USER", "ADMIN", "SUPERADMIN").antMatchers("/provider/**")
+				
+				.antMatchers("/provider/**")
 				.hasAnyAuthority("ADMIN", "SUPERADMIN", "USER").antMatchers("/article/**")
 				.hasAnyAuthority("ADMIN", "SUPERADMIN", "USER").anyRequest().authenticated().and().csrf().disable()
 				.formLogin() // l'accès defait via un formulaire
