@@ -1,5 +1,4 @@
 package com.sip.ams.controllers;
-
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -67,7 +66,7 @@ public class AccountController {
 	@PathVariable ("email") String email) {
 	sendEmail(email, false);
 	User user = userRepository.findById(id).orElseThrow(()->new IllegalArgumentException("Invalid User Id:" + id));
-	user.setActive(1);
+	user.setActive(0);
 	userRepository.save(user);
 	return "redirect:../../list";
 	}
