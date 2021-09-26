@@ -66,7 +66,7 @@ public class AccountController {
 	@PathVariable ("email") String email) {
 	sendEmail(email, false);
 	User user = userRepository.findById(id).orElseThrow(()->new IllegalArgumentException("Invalid User Id:" + id));
-	user.setActive(0);
+	user.setActive(1);
 	userRepository.save(user);
 	return "redirect:../../list";
 	}

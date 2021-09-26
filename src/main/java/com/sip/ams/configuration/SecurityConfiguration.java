@@ -38,11 +38,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.antMatchers("/login").permitAll() // accès pourtous users
 				.antMatchers("/registration").permitAll() // accèspour tous users
 				.antMatchers("/role/**").permitAll()
+				.antMatchers("/accounts/**").permitAll()
 				
 				//.antMatchers("/provider/**").hasAuthority("ADMIN").antMatchers("/article/**").hasAuthority("USER")
-				.antMatchers("/provider/**").hasAnyAuthority("ADMIN", "SUPERADMIN","USER")
-				.antMatchers("/article/**").hasAnyAuthority("USER","SUPERADMIN","USER")
-				.antMatchers("/provider/**").hasAuthority("ADMIN").antMatchers("/article/**").hasAuthority("USER")
+				.antMatchers("/provider/**").hasAnyAuthority("ADMIN", "SUPERADMIN")
+				.antMatchers("/article/**").hasAnyAuthority("USER","SUPERADMIN")
+				
 				.anyRequest().authenticated().and().csrf().disable().formLogin() // l'accès defait via un formulaire
 				
 				.loginPage("/login").failureUrl("/login?error=true") // fixer lapage login
