@@ -1,5 +1,4 @@
 package com.sip.ams.services;
-
 import com.sip.ams.entities.Role;
 import com.sip.ams.entities.User;
 import com.sip.ams.repositories.RoleRepository;
@@ -24,7 +23,8 @@ public class UserService {
 		this.bCryptPasswordEncoder = bCryptPasswordEncoder;
 	}
 
-	public User findUserByEmail(String email) {
+	public User findUserByEmail(String email)
+	{
 		return userRepository.findByEmail(email);
 	}
 
